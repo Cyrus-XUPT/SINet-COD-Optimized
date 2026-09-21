@@ -1,0 +1,9 @@
+# 忽略数据集和结果图片
+Dataset/
+Result/
+# 忽略庞大的模型权重文件
+Snapshot/
+*.pth
+# 忽略 Python 缓存
+__pycache__/
+*.pyc.idea/
