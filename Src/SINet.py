@@ -168,11 +168,12 @@ class SINet_ResNet50(nn.Module):
         x0 = self.resnet.relu(x0)
         # - low-level features
         x0 = self.resnet.maxpool(x0)    # (BS, 64, 88, 88)
+        print(f"\n[我的探针 1] 经过开局四板斧后，x0 的真实尺寸是: {x0.shape}") # <-- 插入这行
         x1 = self.resnet.layer1(x0)     # (BS, 256, 88, 88)
         x2 = self.resnet.layer2(x1)     # (BS, 512, 44, 44)
 
         # ---- Stage-1: Search Module (SM) ----
-        x01 = torch.cat((x0, x1), dim=1)        # (BS, 64+256, 88, 88)
+        x01 = torch.cat((x0,x1), dim=1)        # (BS, 64+256, 88, 88)
         x01_down = self.downSample(x01)         # (BS, 320, 44, 44)
         x01_sm_rf = self.rf_low_sm(x01_down)    # (BS, 32, 44, 44)
 
@@ -193,7 +194,7 @@ class SINet_ResNet50(nn.Module):
 
         # ---- Switcher: Search Attention (SA) ----
         x2_sa = self.SA(camouflage_map_sm.sigmoid(), x2)    # (512, 44, 44)
-
+        print(f"[我的探针 2] 经过注意力手电筒过滤后，x2_sa 的真实尺寸是: {x2_sa.shape}\n") # <-- 插入这行
         # ---- Stage-2: Identification Module (IM) ----
         x3_im = self.resnet.layer3_2(x2_sa)                 # (1024, 22, 22)
         x4_im = self.resnet.layer4_2(x3_im)                 # (2048, 11, 11)
